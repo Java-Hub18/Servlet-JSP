@@ -1,0 +1,2541 @@
+package controllers;
+
+import dao.EmployeeDao;
+import entities.Employee;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
+@WebServlet(name = "EmployeeController", urlPatterns = {"/EmployeeController"})
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
+        maxFileSize = 1024 * 1024 * 10, // 10MB
+        maxRequestSize = 1024 * 1024 * 50)
+public class EmployeeController extends HttpServlet {
+public static final String UPLOAD_DIR = "resources";
+PrintWriter out;
+HttpSession session;
+String fileName1,fileName2,fileName3,fileName4,fileName5,fileName6,fullName,fatherName,dob,gender,contact,loc_address,per_address,experience,email,password,
+       empid,department,designation,doj,salary,accountName,accountNumber,bank,ifsc,pan,branch,resume,offerLetter,joiningLetter,IDProof,education,date,added_date,date_month;
+String file1,file2,file3,file4,file5,file6,status;
+    SimpleDateFormat sdf,sdf1;
+protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        out=response.getWriter();
+        session=request.getSession();
+        try
+        {
+        if(request.getParameter("save_emp")!=null)
+        {
+            Part part1 = request.getPart("image"); 
+            Part part2 = request.getPart("resume");
+            Part part3 = request.getPart("offerLetter");
+            Part part4 = request.getPart("joiningLetter"); 
+            Part part5 = request.getPart("IDProof");
+            Part part6 = request.getPart("degree");
+            
+            fileName1=extractFileName(part1);
+            fileName2=extractFileName(part2);
+            fileName3=extractFileName(part3);
+            fileName4 =extractFileName(part4);
+            fileName5 =extractFileName(part5);
+            fileName6 =extractFileName(part6);
+            
+            file1=UPLOAD_DIR+File.separator+fileName1;            
+            /***** Get The Absolute Path Of The Web Application *****/
+    		String applicationPath = getServletContext().getRealPath("");
+    		String uploadPath = applicationPath  + UPLOAD_DIR;
+    		System.out.println(applicationPath);
+    		File fileUploadDirectory = new File(uploadPath);
+    		if (!fileUploadDirectory.exists()) {
+    			fileUploadDirectory.mkdirs();
+    		}
+           
+                String applicationPath1 = getServletContext().getRealPath("");
+                String uploadPath1 = applicationPath1+File.separator+ UPLOAD_DIR;
+                
+                
+                String savePath1=uploadPath1+File.separator+fileName1;
+                System.out.println("savePath1: "+savePath1);
+                
+                String sRootPath = new File(savePath1).getAbsolutePath();
+                File fileSaveDir1 = new File(savePath1);  
+                part1.write(savePath1 + File.separator);
+
+                
+                fullName=request.getParameter("fullName");
+                fatherName=request.getParameter("fatherName");
+                dob=request.getParameter("dob");//dd-MM-yyyy
+                String db[]=dob.split("-");
+                String new_dob=db[2]+"-"+db[1]+"-"+db[0];
+                
+                date_month=request.getParameter("date_month");//MM-dd
+                String dmonth[]=date_month.split("-");
+                String new_date_month=dmonth[1]+"-"+dmonth[0];
+
+                gender=request.getParameter("gender");
+                contact=request.getParameter("contact");
+                loc_address=request.getParameter("loc_address");
+                per_address=request.getParameter("per_address");
+                experience=request.getParameter("experience");
+                email=request.getParameter("email");
+                password=request.getParameter("password");
+                empid=request.getParameter("empid");
+                department=request.getParameter("department");
+                designation=request.getParameter("designation");
+                doj=request.getParameter("doj");
+                salary=request.getParameter("salary");
+                accountName=request.getParameter("accountName");
+                accountNumber=request.getParameter("accountNumber");
+                bank=request.getParameter("bank");
+                ifsc=request.getParameter("ifsc");
+                pan=request.getParameter("pan");
+                branch=request.getParameter("branch");
+                resume=request.getParameter("resume");
+                offerLetter=request.getParameter("offerLetter");
+                joiningLetter=request.getParameter("joiningLetter");
+                IDProof=request.getParameter("IDProof");
+                education=request.getParameter("degree");
+                sdf=new SimpleDateFormat("yyyy-MM-dd");
+                sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                date=sdf.format(new Date());
+                added_date=sdf1.format(new Date());
+                status="Active";
+                //----------------In All-----------------//
+            if(fileName2!=null && !fileName2.equals("") && fileName3!=null && !fileName3.equals("") &&  fileName4!=null && !fileName4.equals("") && fileName5!=null && !fileName5.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("in all {2,3,4,5,6}");//1
+                            
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                System.out.println("savePath3: "+savePath3);
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();  
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+                      
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setDate_month(new_date_month);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            //----------------4 groups-----------------//
+            else if(fileName2!=null && !fileName2.equals("") && fileName3!=null && !fileName3.equals("") &&  fileName4!=null && !fileName4.equals("") && fileName5!=null && !fileName5.equals(""))
+            {
+                System.out.println("not in 6th {2,3,4,5}");//2
+                String image6 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                System.out.println("savePath3: "+savePath3);
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();  
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName3!=null && !fileName3.equals("") &&  fileName4!=null && !fileName4.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 5th {2,3,4,6}");//3
+                String image5 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                System.out.println("savePath3: "+savePath3);
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+       
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();  
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(image5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName3!=null && !fileName3.equals("") &&  fileName5!=null && !fileName5.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 4th {2,3,5,6}");//4
+                String image4 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                System.out.println("savePath3: "+savePath3);
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+       
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();  
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName4!=null && !fileName4.equals("") &&  fileName5!=null && !fileName5.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 3rd {2,4,5,6}");//5
+                String image3 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                System.out.println("savePath4: "+savePath4);
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+                       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+       
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();  
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName3!=null && !fileName3.equals("") && fileName4!=null && !fileName4.equals("") &&  fileName5!=null && !fileName5.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 2nd {3,4,5,6}");//6
+                String image2 = "";
+                        
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                System.out.println("savePath3: "+savePath3);
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+       
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();  
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            //----------------3 groups-----------------//
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName3!=null && !fileName3.equals("") &&  fileName4!=null && !fileName4.equals(""))
+            {
+                System.out.println("not in 5th & 6th {2,3,4}");//7
+                String image6 = "";
+                String image5 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                System.out.println("savePath3: "+savePath3);
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(image5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName3!=null && !fileName3.equals("") &&  fileName5!=null && !fileName5.equals(""))
+            {
+                System.out.println("not in 4th & 6th {2,3,5}");//8
+                String image6 = "";
+                String image4 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                System.out.println("savePath3: "+savePath3);
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName4!=null && !fileName4.equals("") &&  fileName5!=null && !fileName5.equals(""))
+            {
+                System.out.println("not in 3rd & 6th {2,4,5}");//9
+                String image6 = "";
+                String image3 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                System.out.println("savePath4: "+savePath4);
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+                       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName3!=null && !fileName3.equals("") &&  fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 4th & 5th {2,3,6}");//10
+                String image4 = "";
+                String image5 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                System.out.println("savePath3: "+savePath3);
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(image5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName4!=null && !fileName4.equals("") &&  fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 3rd & 5th {2,4,6}");//11
+                String image5 = "";
+                String image3 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                System.out.println("savePath4: "+savePath4);
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+                       
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(image5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName5!=null && !fileName5.equals("") &&  fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 3rd & 4th {2,5,6}");//12
+                String image4 = "";
+                String image3 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator);
+                       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                System.out.println("savePath5: "+savePath5);
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+                       
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName3!=null && !fileName3.equals("") && fileName4!=null && !fileName4.equals("") &&  fileName5!=null && !fileName5.equals(""))
+            {
+                System.out.println("not in 2nd & 6th {3,4,5}");//13
+                String image6 = "";
+                String image2 = "";
+                
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                System.out.println("savePath4: "+savePath4);
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+                       
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName3!=null && !fileName3.equals("") && fileName5!=null && !fileName5.equals("") &&  fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 2nd & 5th {3,5,6}");//14
+                String image5 = "";
+                String image2 = "";
+                
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);
+                       
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                System.out.println("savePath4: "+savePath4);
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);
+                       
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(image5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            //----------------2 groups-----------------//
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName3!=null && !fileName3.equals(""))
+            {
+                System.out.println("not in 4th,5th & 6th {2,3}");//15
+                String image4 = "";
+                String image5 = "";
+                String image6 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator); 
+                
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(image5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName4!=null && !fileName4.equals(""))
+            {
+                System.out.println("not in 3rd,5th & 6th {2,4}");//16
+                String image3 = "";
+                String image5 = "";
+                String image6 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator); 
+                
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(image5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName5!=null && !fileName5.equals(""))
+            {
+                System.out.println("not in 3rd,4th & 6th {2,5}");//17
+                String image3 = "";
+                String image4 = "";
+                String image6 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator); 
+                
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName2!=null && !fileName2.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 3rd,4th & 5th {2,6}");//18
+                String image3 = "";
+                String image4 = "";
+                String image5 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator); 
+                
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(image5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName3!=null && !fileName3.equals("") && fileName4!=null && !fileName4.equals(""))
+            {
+                System.out.println("not in 2nd,5th & 6th {3,4}");//19
+                String image2 = "";
+                String image5 = "";
+                String image6 = "";
+                
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator); 
+                
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(image5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName3!=null && !fileName3.equals("") && fileName5!=null && !fileName5.equals(""))
+            {
+                System.out.println("not in 2nd,5th & 6th {3,5}");//20
+                String image2 = "";
+                String image4 = "";
+                String image6 = "";
+                
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator); 
+                
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName3!=null && !fileName3.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 2nd,4th & 5th {3,6}");//21
+                String image2 = "";
+                String image4 = "";
+                String image5 = "";
+                
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator); 
+                
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(image5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName4!=null && !fileName4.equals("") && fileName5!=null && !fileName5.equals(""))
+            {
+                System.out.println("not in 2nd,4th & 5th {4,5}");//22
+                String image2 = "";
+                String image3 = "";
+                String image6 = "";
+                
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator); 
+                
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName4!=null && !fileName4.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 2nd,3rd & 5th {4,6}");//23
+                String image2 = "";
+                String image3 = "";
+                String image5 = "";
+                
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator); 
+                
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(image5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName5!=null && !fileName5.equals("") && fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 2nd,3rd & 4th {5,6}");//24
+                String image2 = "";
+                String image3 = "";
+                String image4 = "";
+                
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator); 
+                
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator);                  
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                emp.setDate_month(new_date_month);
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            //----------------In One Only-----------------//
+            
+            else if(fileName2!=null && !fileName2.equals(""))
+            {
+                System.out.println("not in 3rd,4th,5th & 6th {2}");//25
+                String image3 = "";
+                String image4 = "";
+                String image5 = "";
+                String image6 = "";
+                
+                fileName2 = extractFileName(part2);
+                String applicationPath2 = getServletContext().getRealPath("");
+                String uploadPath2 = applicationPath2+File.separator+UPLOAD_DIR;
+                String savePath2=uploadPath2+File.separator+fileName2;
+                String sRootPath2 = new File(savePath2).getAbsolutePath();
+	        File fileSaveDir2 = new File(savePath2);  
+	        part2.write(savePath2 + File.separator); 
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(fileName2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(image5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName3!=null && !fileName3.equals(""))
+            {
+                System.out.println("not in 2nd,3rd,4th & 6th {3}");//26
+                String image2 = "";
+                String image4 = "";
+                String image5 = "";
+                String image6 = "";
+                
+                fileName3 = extractFileName(part3);
+                String applicationPath3 = getServletContext().getRealPath("");
+                String uploadPath3 = applicationPath3+File.separator+UPLOAD_DIR;
+                String savePath3=uploadPath3+File.separator+fileName3;
+                String sRootPath3 = new File(savePath3).getAbsolutePath();
+	        File fileSaveDir3 = new File(savePath3);  
+	        part3.write(savePath3 + File.separator); 
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                emp.setDate_month(new_date_month);	
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(fileName3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(image5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName4!=null && !fileName4.equals(""))
+            {
+                System.out.println("not in 2nd,3rd,5th & 6th {4}");//27
+                String image2 = "";
+                String image3 = "";
+                String image5 = "";
+                String image6 = "";
+                
+                fileName4 = extractFileName(part4);
+                String applicationPath4 = getServletContext().getRealPath("");
+                String uploadPath4 = applicationPath4+File.separator+UPLOAD_DIR;
+                String savePath4=uploadPath4+File.separator+fileName4;
+                String sRootPath4 = new File(savePath4).getAbsolutePath();
+	        File fileSaveDir4 = new File(savePath4);  
+	        part4.write(savePath4 + File.separator); 
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(fileName4);  
+                emp.setIdProof(image5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            
+            else if(fileName5!=null && !fileName5.equals(""))
+            {
+                System.out.println("not in 2nd,3rd,4th & 6th {5}");//28
+                String image2 = "";
+                String image3 = "";
+                String image4 = "";
+                String image6 = "";
+                
+                fileName5 = extractFileName(part5);
+                String applicationPath5 = getServletContext().getRealPath("");
+                String uploadPath5 = applicationPath5+File.separator+UPLOAD_DIR;
+                String savePath5=uploadPath5+File.separator+fileName5;
+                String sRootPath5 = new File(savePath5).getAbsolutePath();
+	        File fileSaveDir5 = new File(savePath5);  
+	        part5.write(savePath5 + File.separator); 
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                emp.setDate_month(new_date_month);	
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(fileName5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            
+            else if(fileName6!=null && !fileName6.equals(""))
+            {
+                System.out.println("not in 2nd,3rd,4th & 5th {6}");//29
+                String image2 = "";
+                String image3 = "";
+                String image4 = "";
+                String image5 = "";
+                
+                fileName6 = extractFileName(part6);
+                String applicationPath6 = getServletContext().getRealPath("");
+                String uploadPath6 = applicationPath6+File.separator+UPLOAD_DIR;
+                String savePath6=uploadPath6+File.separator+fileName6;
+                String sRootPath6 = new File(savePath6).getAbsolutePath();
+	        File fileSaveDir6 = new File(savePath6);  
+	        part6.write(savePath6 + File.separator); 
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+                emp.setDate_month(new_date_month);
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(image5);
+                emp.setEducation(fileName6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+            //----------------If no file choosen-----------------//
+            
+            else
+            {
+                System.out.println("not in all");//30
+                String image2 = "";
+                String image3 = "";
+                String image4 = "";
+                String image5 = "";
+                String image6 = "";
+                String image1 = "";
+                
+                Employee emp=new Employee();
+                emp.setEmpid(empid);
+                emp.setName(fullName);
+                emp.setFname(fatherName);
+                emp.setDob(new_dob);
+                emp.setGender(gender);
+                emp.setContact(contact);
+                emp.setEmail(email);
+                emp.setDepartment(department);
+                emp.setDesignation(designation);
+                emp.setLocAddress(loc_address);
+                emp.setPerAddress(per_address);
+                emp.setWorkExperience(experience);
+                emp.setPassword(password);
+                emp.setSalary(salary);
+                emp.setDoj(doj);
+
+                emp.setIfscCode(ifsc); 
+                emp.setAccountHolderName(accountName);
+                emp.setAccountNumber(accountNumber);
+                emp.setPanNumber(pan);
+                emp.setBankName(bank);
+                emp.setBranch(branch);
+                
+                emp.setDate(date);
+                emp.setAdded_date(added_date);   
+                emp.setDate_month(new_date_month);
+                emp.setImage(file1);
+                emp.setResume(image2);
+                emp.setOfferLetter(image3);
+                emp.setJoiningLetter(image4);  
+                emp.setIdProof(image5);
+                emp.setEducation(image6);
+                emp.setStatus(status);
+                emp=new EmployeeDao().saveEmp(emp);
+                if(emp.isValid())
+                {
+                    session.setAttribute("emp", emp);
+                    response.sendRedirect("employees.jsp");
+                }
+                else{
+                    response.sendRedirect("admin.jsp");
+                }
+            }
+        }
+        else if(request.getParameter("update_emp")!=null)
+        {
+        	
+        	Employee emp=EmployeeDao.getEmployeeById(request.getParameter("empid"));
+        	String empid=request.getParameter("empid");
+            //System.out.println("empid: "+empid);
+        	String applicationPath1 = getServletContext().getRealPath("");
+            String uploadPath1 = applicationPath1+File.separator+ UPLOAD_DIR;
+            
+            Part part1 = request.getPart("image");
+            String fileName1=extractFileName(part1);
+            if(fileName1!=null && !fileName1.equals(""))
+            {
+            System.out.println("image: "+fileName1);
+            System.out.println(fileName1);
+            String savePath1=uploadPath1+File.separator+fileName1;
+            System.out.println("savePath1: "+savePath1);
+            
+            String sRootPath = new File(savePath1).getAbsolutePath();
+            File fileSaveDir1 = new File(savePath1);  
+            part1.write(savePath1 + File.separator);
+           String fullName=request.getParameter("fullName");
+           
+           String fatherName=request.getParameter("fatherName");
+           
+           String dob=request.getParameter("dob");
+           System.out.println("in update:"+dob);
+           String db[]=dob.split("-");
+           String new_dob=db[2]+"-"+db[1]+"-"+db[0];
+           System.out.println("in update:"+new_dob);
+           String date_month=request.getParameter("date_month");//MM-dd
+           System.out.println("in update:"+date_month);
+           String dmonth[]=date_month.split("-");
+           String new_date_month=dmonth[1]+"-"+dmonth[0];
+           System.out.println("in update:"+new_date_month);
+           String gender=request.getParameter("gender");
+           String contact=request.getParameter("contact");
+           
+           String loc_address=request.getParameter("loc_address");
+           
+           String per_address=request.getParameter("per_address");
+           
+           String experience=request.getParameter("experience");
+           
+           String email=request.getParameter("email");
+           
+           String password=request.getParameter("password");
+           
+           String department=request.getParameter("department");
+           
+           String designation=request.getParameter("designation");
+           
+           String doj=request.getParameter("doj");
+           
+           String salary=request.getParameter("salary");
+           
+           String accountName=request.getParameter("accountName");
+           
+           String accountNumber=request.getParameter("accountNumber");
+           
+           String bank=request.getParameter("bank");
+           
+           String ifsc=request.getParameter("ifsc");
+           
+           String pan=request.getParameter("pan");
+
+           String branch=request.getParameter("branch");
+           
+           SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+           SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+           String date=sdf.format(new Date());
+           String added_date=sdf1.format(new Date());
+           String status=request.getParameter("active");
+        		
+            emp.setName(fullName);
+            emp.setFname(fatherName);
+            emp.setDob(new_dob);
+            emp.setGender(gender);
+            emp.setContact(contact);
+            emp.setEmail(email);
+            emp.setDepartment(department);
+            emp.setDesignation(designation);
+            emp.setLocAddress(loc_address);
+            emp.setPerAddress(per_address);
+            emp.setWorkExperience(experience);
+            emp.setPassword(password);
+            emp.setSalary(salary);
+            emp.setDoj(doj);
+            emp.setDate_month(new_date_month);
+            emp.setIfscCode(ifsc); 
+            emp.setAccountHolderName(accountName);
+            emp.setAccountNumber(accountNumber);
+            emp.setPanNumber(pan);
+            emp.setBankName(bank);
+            emp.setBranch(branch);
+            
+            emp.setDate(date);
+            emp.setAdded_date(added_date);   
+            String file1=UPLOAD_DIR+File.separator+fileName1;
+            emp.setImage(file1);
+            
+            emp.setStatus(status);
+            emp.setEmpid(empid);
+            int i= new EmployeeDao().updateEmployee(emp);
+            if(i>0)
+            {
+                response.sendRedirect("employees.jsp");
+            }
+            else
+            {
+            	response.sendRedirect("employees.jsp");
+            }
+         }
+            else
+            {
+            	String fullName=request.getParameter("fullName");
+                String file=request.getParameter("files");
+                String fatherName=request.getParameter("fatherName");
+                
+                String dob=request.getParameter("dob");
+                System.out.println("in update1:"+dob);
+                String db[]=dob.split("-");
+                String new_dob=db[2]+"-"+db[1]+"-"+db[0];
+                System.out.println("in update1:"+new_dob);
+                String date_month=request.getParameter("date_month");//MM-dd
+                System.out.println("in update1:"+date_month);
+                String dmonth[]=date_month.split("-");
+                String new_date_month=dmonth[1]+"-"+dmonth[0];
+                System.out.println("in update1:"+new_date_month);
+                String gender=request.getParameter("gender");
+                String contact=request.getParameter("contact");
+                
+                String loc_address=request.getParameter("loc_address");
+                
+                String per_address=request.getParameter("per_address");
+                
+                String experience=request.getParameter("experience");
+                
+                String email=request.getParameter("email");
+                
+                String password=request.getParameter("password");
+                
+                String department=request.getParameter("department");
+                
+                String designation=request.getParameter("designation");
+                
+                String doj=request.getParameter("doj");
+                
+                String salary=request.getParameter("salary");
+                
+                String accountName=request.getParameter("accountName");
+                
+                String accountNumber=request.getParameter("accountNumber");
+                
+                String bank=request.getParameter("bank");
+                
+                String ifsc=request.getParameter("ifsc");
+                
+                String pan=request.getParameter("pan");
+
+                String branch=request.getParameter("branch");
+                
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String date=sdf.format(new Date());
+                String added_date=sdf1.format(new Date());
+                String status=request.getParameter("active");
+             		
+                 emp.setName(fullName);
+                 emp.setFname(fatherName);
+                 emp.setDob(new_dob);
+                 emp.setGender(gender);
+                 emp.setContact(contact);
+                 emp.setEmail(email);
+                 emp.setDepartment(department);
+                 emp.setDesignation(designation);
+                 emp.setLocAddress(loc_address);
+                 emp.setPerAddress(per_address);
+                 emp.setWorkExperience(experience);
+                 emp.setPassword(password);
+                 emp.setSalary(salary);
+                 emp.setDoj(doj);
+                 emp.setDate_month(new_date_month);
+                 emp.setIfscCode(ifsc); 
+                 emp.setAccountHolderName(accountName);
+                 emp.setAccountNumber(accountNumber);
+                 emp.setPanNumber(pan);
+                 emp.setBankName(bank);
+                 emp.setBranch(branch);
+                 
+                 emp.setDate(date);
+                 emp.setAdded_date(added_date);   
+                 //String file1=UPLOAD_DIR+File.separator+fileName1;
+                 emp.setImage(file);
+                 
+                 emp.setStatus(status);
+                 emp.setEmpid(empid);
+                 int i= new EmployeeDao().updateEmployee(emp);
+                 if(i>0)
+                 {
+                     response.sendRedirect("employees.jsp");
+                 }
+                 else
+                 {
+                 	response.sendRedirect("employees.jsp");
+                 }
+            }
+        }
+        
+        else
+        {
+        	String empid=request.getParameter("name");
+        	SessionFactory sf=util.HibernateUtil.getSessionFactory();
+			Session ss=sf.openSession();
+			Transaction tx=ss.beginTransaction();
+			Query query = ss.createQuery("update Employee set status = 'In-Active'  where empid = '"+empid+"'");
+			int result = query.executeUpdate();
+			ss.close();
+			tx.commit();
+			if(result>0)
+			{
+				response.sendRedirect("employees.jsp");
+			}
+        }
+            
+        }
+        catch(Exception e)
+        {
+            out.println(e);
+        }
+    }
+
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+private String extractFileName(Part part) {
+        String contentDisp = part.getHeader("content-disposition");
+        String[] items = contentDisp.split(";");
+        for (String s : items) {
+            if (s.trim().startsWith("filename")) {
+                return s.substring(s.indexOf("=") + 2, s.length() - 1);
+            }
+        }
+        return "";
+    }
+}
+
+--------------------------------
+<%
+String dob=request.getParameter("dob");
+String dates[]=dob.split("-");
+String date_month=dates[1]+"-"+dates[0];
+out.println(date_month);
+System.out.println(date_month);
+%>

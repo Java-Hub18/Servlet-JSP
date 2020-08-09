@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="countryStateCity.js"></script>
+    </head>
+    <body>
+    <center>      
+        <fieldset style="width: 230px;">
+            <legend><strong>Make your selection</strong></legend>
+            <marquee>Created By Dharmesh Mourya</marquee><hr>
+            <p>
+            <form name="test" method="POST" action="Process">
+                <table>
+                    <tr>
+                        <td style="text-align: left;">Country:</td>
+                        <td style="text-align: left;">
+                            <select name="country" id="country" onchange="setStates();">
+                                <option selected="" value="-1" disabled="">Select Country</option>
+                                <option value="India">India</option>
+                                <option value="Australia">Australia</option>
+                                <option value="United States">United States</option>
+                            </select>
+                        </td>
+                    </tr><tr>
+                        <td style="text-align: left;">State:</td>
+                        <td style="text-align: left;">
+                            <select name="state" id="state" onchange="setCities();">
+                                <option selected="" value="-1" disabled="">Select State</option>
+                                <option value="">Please select a Country</option>
+                            </select>
+                        </td>
+                    </tr><tr>
+                        <td style="text-align: left;">City:</td>
+                        <td style="text-align: left;">
+                            <select name="city"  id="city">
+                                <option selected="" value="-1" disabled="">Select City</option>
+                                <option value="">Please select a Country</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <input type="submit" value="Submit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="reset" value="Reset">
+                </center>
+            </form>
+        </fieldset>
+
+    </body>
+</html>
