@@ -1,0 +1,19 @@
+
+table:country
+---------------------------------------------------------
+CREATE TABLE `countries` (
+ `id` int(11) NOT NULL,
+ `country` varchar(255) NOT NULL
+);
+
+
+---------------------------------------------------------
+table:states
+
+CREATE TABLE `states` (
+ `id` int(11) NOT NULL,
+ `country_id` int(11) NOT NULL COMMENT 'id of the countries table',
+ `state` varchar(255) NOT NULL
+)
+
+

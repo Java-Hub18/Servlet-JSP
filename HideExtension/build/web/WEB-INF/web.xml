@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+
+    <servlet>
+        <servlet-name>test</servlet-name> <!-- This name and this name must be same. -->
+        <jsp-file>/test.jsp</jsp-file> <!-- For JSP & HTML Page Only. -->
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>test</servlet-name> <!-- This name and this name must be same. -->
+        <url-pattern>/test</url-pattern> <!-- Your Custome URL -->
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>index</servlet-name> <!-- This name and this name must be same. -->
+        <jsp-file>/index.html</jsp-file> <!-- For JSP & HTML Page Only. -->
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>index</servlet-name> <!-- This name and this name must be same. -->
+        <url-pattern>/index</url-pattern> <!-- Your Custome URL -->
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>NewServlet</servlet-name> <!-- This name and this name must be same. -->
+        <servlet-class>com.test.NewServlet</servlet-class> <!-- Write With Package Name -->
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NewServlet</servlet-name> <!-- This name and this name must be same. -->
+        <url-pattern>/TestServlet</url-pattern> <!-- Your Custome URL -->
+    </servlet-mapping>
+
+</web-app>

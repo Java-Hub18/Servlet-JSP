@@ -1,0 +1,16 @@
+		How to upload and display blob image with  database using servlet/jsp
+
+
+Database Name: image_blob
+Table Name: data
+
+Table Structure:
+CREATE TABLE `data` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `image` longblob NOT NULL,
+ PRIMARY KEY (`id`)
+)
+
+
+Thank you for watching....
+And Please Subscribe to my Channel....
