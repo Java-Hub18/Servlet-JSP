@@ -1,0 +1,9 @@
+CREATE TABLE `employee` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `firstname` varchar(255) NOT NULL,
+ `lastname` varchar(255) NOT NULL,
+ `filename` varchar(255) NOT NULL,
+ `path` varchar(255) NOT NULL,
+ `added_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ PRIMARY KEY (`id`)
+)
