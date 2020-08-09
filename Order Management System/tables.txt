@@ -1,0 +1,20 @@
+CREATE TABLE `items` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `cname` varchar(255) NOT NULL,
+ `price` varchar(255) NOT NULL,
+ `qty` varchar(255) NOT NULL,
+ `total` int(11) NOT NULL,
+ PRIMARY KEY (`id`)
+)
+
+
+CREATE TABLE `orders` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `bill_no` float NOT NULL,
+ `item` varchar(255) NOT NULL,
+ `price` float NOT NULL,
+ `qty` float NOT NULL,
+ `total` float NOT NULL,
+ `added_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ PRIMARY KEY (`id`)
+)
